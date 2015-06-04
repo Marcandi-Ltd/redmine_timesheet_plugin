@@ -82,6 +82,12 @@ class TimesheetController < ApplicationController
 
     @grand_total = @total.collect{|k,v| v}.inject{|sum,n| sum + n}
 
+    @totalcostData = call_hook(:plugin_timesheet_controller_report_action_before_send, { :timesheet => @timesheet, :params => params })
+
+    @total_cost = @totalcostData.to_a[0]
+    @gtc = @total_cost.collect{|k,v| v}.inject{|sum, x| sum+x}
+
+
     respond_to do |format|
       format.html { render :action => 'details', :layout => false if request.xhr? }
       format.csv  { send_data @timesheet.to_csv, :filename => 'timesheet.csv', :type => "text/csv" }
